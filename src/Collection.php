@@ -6,13 +6,13 @@ use Psr\Http\Message\ResponseInterface;
 
 class Collection implements \Iterator, \Countable {
 
-    protected int $count = 0;
-    protected int $index = 0;
-    protected int $page_index = 0;
-    protected array $page;
-    protected array $page_org;
-    protected ?string $next = null;
-    protected ?string $next_org = null;
+    protected $count = 0;
+    protected $index = 0;
+    protected $page_index = 0;
+    protected $page;
+    protected $page_org;
+    protected $next = null;
+    protected $next_org = null;
 
     /** @var Client */
     protected $client;
