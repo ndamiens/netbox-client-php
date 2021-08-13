@@ -18,11 +18,11 @@ class Client {
 
     private function getGuzzleClient(): GuzzleClient {
         $this->g_client = new GuzzleClient(
-            [
+                [
             "headers" => [
                 "Authorization" => "Token {$this->token}",
             ]
-            ]
+                ]
         );
         return $this->g_client;
     }
@@ -54,6 +54,16 @@ class Client {
 
     public function getTenant(int $tenant_id): Collection {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/tenancy/tenants/?id=%d", $this->api_url, $tenant_id));
+        return new Collection($this, $q);
+    }
+
+    public function getSites(): Collection {
+        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/sites", $this->api_url));
+        return new Collection($this, $q);
+    }
+
+    public function getSite(int $site_id): Collection {
+        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/sites/?id=%d", $this->api_url, $site_id));
         return new Collection($this, $q);
     }
 
