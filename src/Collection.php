@@ -30,8 +30,8 @@ class Collection implements \Iterator, \Countable {
         $this->next_org = $this->next;
     }
 
-    public function current(): array {
-        return $this->page[$this->page_index];
+    public function current(): Entity {
+        return new Entity($this->client, $this->page[$this->page_index]);
     }
 
     public function key() {
