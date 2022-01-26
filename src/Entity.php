@@ -78,11 +78,14 @@ class Entity implements \ArrayAccess {
      * @throw ClientException
      * @return void
      */
-    public static function post(Client $client, string $path, array $values): void {
-        $client->getGuzzleClient()->post(
+    public static function post(Client $client, string $path, array $values): int {
+        $response = $client->getGuzzleClient()->post(
                 $client->getApiUrl() . $path,
                 ['json' => $values]
         );
+        $resp = json_decode($response->getBody()->getContents(), true);
+        print_r($resp);
+        return $resp['id'];
     }
 
     /**
@@ -91,8 +94,8 @@ class Entity implements \ArrayAccess {
      * @param array $values required keys name, slug
      * @throw ClientException
      */
-    public static function postTenant(Client $client, array $values) {
-        self::post($client, "/api/tenancy/tenants/", $values);
+    public static function postTenant(Client $client, array $values): int {
+        return self::post($client, "/api/tenancy/tenants/", $values);
     }
 
     /**
@@ -101,8 +104,8 @@ class Entity implements \ArrayAccess {
      * @param array $values 
      * @throw ClientException
      */
-    public static function postVlanGroup(Client $client, array $values) {
-        self::post($client, "/api/ipam/vlan-groups/", $values);
+    public static function postVlanGroup(Client $client, array $values): int {
+        return self::post($client, "/api/ipam/vlan-groups/", $values);
     }
 
     const VLAN_STATUS_LIST = ['active', 'reserved', 'deprecated'];
@@ -115,13 +118,13 @@ class Entity implements \ArrayAccess {
      * 
      * status values : active, reserved, deprecated
      */
-    public static function postVlan(Client $client, array $values) {
+    public static function postVlan(Client $client, array $values): int {
         if (array_key_exists('status', $values)) {
             if (!in_array($values['status'], self::VLAN_STATUS_LIST)) {
                 throw new Exception('invalid status');
             }
         }
-        self::post($client, "/api/ipam/vlans/", $values);
+        return self::post($client, "/api/ipam/vlans/", $values);
     }
 
     public function offsetUnset($offset): void {
