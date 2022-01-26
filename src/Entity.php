@@ -84,7 +84,6 @@ class Entity implements \ArrayAccess {
                 ['json' => $values]
         );
         $resp = json_decode($response->getBody()->getContents(), true);
-        print_r($resp);
         return $resp['id'];
     }
 
