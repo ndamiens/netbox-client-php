@@ -105,6 +105,25 @@ class Entity implements \ArrayAccess {
         self::post($client, "/api/ipam/vlan-groups/", $values);
     }
 
+    const VLAN_STATUS_LIST = ['active', 'reserved', 'deprecated'];
+
+    /**
+     * Create Vlan
+     * @param Client $client
+     * @param array $values required keys : vid, name optional : group, tenant, status 
+     * @throw ClientException
+     * 
+     * status values : active, reserved, deprecated
+     */
+    public static function postVlan(Client $client, array $values) {
+        if (array_key_exists('status', $values)) {
+            if (!in_array($values['status'], self::VLAN_STATUS_LIST)) {
+                throw new Exception('invalid status');
+            }
+        }
+        self::post($client, "/api/ipam/vlans/", $values);
+    }
+
     public function offsetUnset($offset): void {
         throw new Exception("unset not allowed");
     }

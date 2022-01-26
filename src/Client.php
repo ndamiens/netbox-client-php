@@ -67,6 +67,11 @@ class Client {
         return new Collection($this, $q);
     }
 
+    /**
+     * Get one site by id
+     * @param int $site_id
+     * @return Collection
+     */
     public function getSite(int $site_id): Collection {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/sites/?id=%d", $this->api_url, $site_id));
         return (new Collection($this, $q))->current();
@@ -74,6 +79,43 @@ class Client {
 
     public function getApiUrl(): string {
         return $this->api_url;
+    }
+
+    /**
+     * Group vlans list
+     * @param int $group_id
+     * @return Collection
+     */
+    public function groupVlans(int $group_id): Collection {
+        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/ipam/vlans/?group_id=%d", $this->api_url, $group_id));
+        return (new Collection($this, $q));
+    }
+
+    /**
+     * Get max vlan id in group
+     * @param int $group_id
+     * @return int|null
+     */
+    public function getMaxVidInVlanGroup(int $group_id): ?int {
+        $last_id = 1;
+        foreach ($this->groupVlans($group_id) as $vlan) {
+            $last_id = max($last_id, $vlan['vid']);
+        }
+        return $last_id;
+    }
+
+    /**
+     * Get next vid in group
+     * @param int $group_id
+     * @return int|null
+     * @throws Exception
+     */
+    public function getNextVidInVlanGroup(int $group_id): ?int {
+        $next_vid = $this->getMaxVidInVlanGroup($group_id) + 1;
+        if ($next_vid >= 4096) {
+            throw new Exception("free vlans first");
+        }
+        return $this->getMaxVidInVlanGroup($group_id) + 1;
     }
 
 }
