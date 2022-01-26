@@ -2,6 +2,8 @@
 
 namespace ND\Netbox;
 
+use GuzzleHttp\Exception\ClientException;
+
 class Entity implements \ArrayAccess {
 
     /** protect keys from updates unwanted */
@@ -66,6 +68,41 @@ class Entity implements \ArrayAccess {
             throw new Exception("update failed");
         }
         $this->changes = [];
+    }
+
+    /**
+     * Post vers Netbox
+     * @param Client $client
+     * @param string $path
+     * @param array $values
+     * @throw ClientException
+     * @return void
+     */
+    public static function post(Client $client, string $path, array $values): void {
+        $client->getGuzzleClient()->post(
+                $client->getApiUrl() . $path,
+                ['json' => $values]
+        );
+    }
+
+    /**
+     * Create tenant
+     * @param Client $client
+     * @param array $values required keys name, slug
+     * @throw ClientException
+     */
+    public static function postTenant(Client $client, array $values) {
+        self::post($client, "/api/tenancy/tenants/", $values);
+    }
+
+    /**
+     * Create Vlangroup
+     * @param Client $client
+     * @param array $values 
+     * @throw ClientException
+     */
+    public static function postVlanGroup(Client $client, array $values) {
+        self::post($client, "/api/ipam/vlan-groups/", $values);
     }
 
     public function offsetUnset($offset): void {

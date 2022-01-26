@@ -27,6 +27,11 @@ class Client {
         return $this->g_client;
     }
 
+    /**
+     * GET an url
+     * @param string $url
+     * @return ResponseInterface
+     */
     public function getUrl(string $url): ResponseInterface {
         return $this->getGuzzleClient()->get($url);
     }
@@ -65,6 +70,10 @@ class Client {
     public function getSite(int $site_id): Collection {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/sites/?id=%d", $this->api_url, $site_id));
         return (new Collection($this, $q))->current();
+    }
+
+    public function getApiUrl(): string {
+        return $this->api_url;
     }
 
 }
