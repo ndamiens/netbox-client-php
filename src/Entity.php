@@ -51,6 +51,19 @@ class Entity implements \ArrayAccess {
         }
     }
 
+    public function updateRelation($key, $value) {
+        try {
+            $this->client->getGuzzleClient()->patch(
+                    $this->entity['url'],
+                    [
+                        'json' => [$key => $value]
+                    ]
+            );
+        } catch (\Exception $e) {
+            throw new Exception("update failed " . $e->getMessage());
+        }
+    }
+
     public function update(): void {
         $changes_with_values = [];
         foreach ($this->changes as $changed_field) {
@@ -65,7 +78,7 @@ class Entity implements \ArrayAccess {
                     ['json' => $changes_with_values]
             );
         } catch (\Exception $e) {
-            throw new Exception("update failed");
+            throw new Exception("update failed " . $e->getMessage());
         }
         $this->changes = [];
     }
@@ -87,7 +100,7 @@ class Entity implements \ArrayAccess {
         if (empty($resp['id'])) {
             // c'est peut $etre une liste
             if (empty($resp[0]['id'])) {
-                throw new \Exception("pas d'id en réponse :".json_encode($resp, \JSON_PRETTY_PRINT));
+                throw new \Exception("pas d'id en réponse :" . json_encode($resp, \JSON_PRETTY_PRINT));
             } else {
                 $resp = $resp[0];
             }
