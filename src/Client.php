@@ -52,6 +52,11 @@ class Client {
         return new Collection($this, $q);
     }
 
+    public function getInterface(int $interface_id): Entity {
+        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/interfaces/?id=%d", $this->api_url, $interface_id));
+        return (new Collection($this, $q))->current();
+    }
+
     public function getTenants(): Collection {
         $q = $this->getGuzzleClient()->request("GET", $this->api_url . "/api/tenancy/tenants");
         return new Collection($this, $q);
