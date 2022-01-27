@@ -42,7 +42,6 @@ class Collection implements \Iterator, \Countable {
         $this->index++;
         $this->page_index++;
         if (!$this->valid() && !is_null($this->next)) {
-            error_log("{$this->next}");
             $query = $this->client->getUrl($this->next);
             if ($query->getStatusCode() != 200) {
                 return;
