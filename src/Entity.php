@@ -84,6 +84,14 @@ class Entity implements \ArrayAccess {
                 ['json' => $values]
         );
         $resp = json_decode($response->getBody()->getContents(), true);
+        if (empty($resp['id'])) {
+            // c'est peut $etre une liste
+            if (empty($resp[0]['id'])) {
+                throw new \Exception("pas d'id en réponse :".json_encode($resp, \JSON_PRETTY_PRINT));
+            } else {
+                $resp = $resp[0];
+            }
+        }
         return $resp['id'];
     }
 
