@@ -70,10 +70,20 @@ class Client {
     /**
      * Get one site by id
      * @param int $site_id
-     * @return Collection
+     * @return Entity
      */
-    public function getSite(int $site_id): Collection {
+    public function getSite(int $site_id): Entity {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/sites/?id=%d", $this->api_url, $site_id));
+        return (new Collection($this, $q))->current();
+    }
+
+    /**
+     * Get one vlan by id (netbox)
+     * @param int $vlan_id
+     * @return Entity
+     */
+    public function getVlan(int $vlan_id): Entity {
+        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/ipam/vlans/?id=%d", $this->api_url, $vlan_id));
         return (new Collection($this, $q))->current();
     }
 
