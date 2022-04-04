@@ -133,4 +133,14 @@ class Client {
         return $this->getMaxVidInVlanGroup($group_id) + 1;
     }
 
+    /**
+     * Device cables list
+     * @param int $cable_id
+     * @return Collection
+     */
+    public function deviceCables(int $device_id): Collection {
+        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/cables?device_id=%d", $this->api_url, $device_id));
+        return (new Collection($this, $q));
+    }
+
 }
