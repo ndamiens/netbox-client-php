@@ -70,27 +70,27 @@ class Client {
     }
 
     public function getInterface(int $interface_id): Entity {
-        return $this->getSingle(sprintf("/api/dcim/interfaces/?id=%d", $interface_id));
+        return $this->getSingle(sprintf("/api/dcim/interfaces/%d", $interface_id));
     }
 
     public function getTenants(): Collection {
-        return $this->getCollection("/api/tenancy/tenants");
+        return $this->getCollection("/api/tenancy/tenants/");
     }
 
     public function getTenant(int $tenant_id): Entity {
-        return $this->getSingle(sprintf("/api/tenancy/tenants/?id=%d", $tenant_id));
+        return $this->getSingle(sprintf("/api/tenancy/tenants/%d", $tenant_id));
     }
 
     public function getSites(): Collection {
-        return $this->getCollection("/api/dcim/sites");
+        return $this->getCollection("/api/dcim/sites/");
     }
 
     public function getSite(int $site_id): Entity {
-        return $this->getSingle(sprintf("/api/dcim/sites/?id=%d", $site_id));
+        return $this->getSingle(sprintf("/api/dcim/sites/%d", $site_id));
     }
 
     public function getVlan(int $vlan_id): Entity {
-        return $this->getSingle(sprintf("/api/ipam/vlans/?id=%d", $vlan_id));
+        return $this->getSingle(sprintf("/api/ipam/vlans/%d", $vlan_id));
     }
 
     public function getApiUrl(): string {
@@ -139,7 +139,7 @@ class Client {
      * @return Collection
      */
     public function deviceCables(int $device_id): Collection {
-        return $this->getCollection(sprintf("/api/dcim/cables?device_id=%d", $device_id));
+        return $this->getCollection(sprintf("/api/dcim/cables/?device_id=%d", $device_id));
     }
-    
+
 }
