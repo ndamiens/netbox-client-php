@@ -36,6 +36,24 @@ class Client {
         return $this->getGuzzleClient()->get($url);
     }
 
+    /**
+     * Gets a NetBox API and returns a Collection from it
+     * @param string $url
+     * @return Collection
+     */
+    public function getCollection($url): Collection {
+        $q = $this->getGuzzleClient()->request("GET", sprintf("%s%s", $this->api_url, $url));
+        return new Collection($this, $q);
+    }
+
+    /**
+     * Gets a NetBox API which returns a collection of one, and returns the Entity from it
+     */
+    public function getSingle($url): Entity {
+        $collection = $this->getCollection($url);
+        return $collection->current();
+    }
+
     public function devices(?array $device_roles = null): Collection {
         $roles = [];
         if (is_array($device_roles)) {
@@ -48,48 +66,31 @@ class Client {
     }
 
     public function deviceInterfaces(int $device_id): Collection {
-        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/interfaces/?device_id=%d", $this->api_url, $device_id));
-        return new Collection($this, $q);
+        return $this->getCollection(sprintf("/api/dcim/interfaces/?device_id=%d", $device_id));
     }
 
     public function getInterface(int $interface_id): Entity {
-        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/interfaces/?id=%d", $this->api_url, $interface_id));
-        return (new Collection($this, $q))->current();
+        return $this->getSingle(sprintf("/api/dcim/interfaces/?id=%d", $interface_id));
     }
 
     public function getTenants(): Collection {
-        $q = $this->getGuzzleClient()->request("GET", $this->api_url . "/api/tenancy/tenants");
-        return new Collection($this, $q);
+        return $this->getCollection("/api/tenancy/tenants");
     }
 
     public function getTenant(int $tenant_id): Entity {
-        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/tenancy/tenants/?id=%d", $this->api_url, $tenant_id));
-        return (new Collection($this, $q))->current();
+        return $this->getSingle(sprintf("/api/tenancy/tenants/?id=%d", $tenant_id));
     }
 
     public function getSites(): Collection {
-        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/sites", $this->api_url));
-        return new Collection($this, $q);
+        return $this->getCollection("/api/dcim/sites");
     }
 
-    /**
-     * Get one site by id
-     * @param int $site_id
-     * @return Entity
-     */
     public function getSite(int $site_id): Entity {
-        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/sites/?id=%d", $this->api_url, $site_id));
-        return (new Collection($this, $q))->current();
+        return $this->getSingle(sprintf("/api/dcim/sites/?id=%d", $site_id));
     }
 
-    /**
-     * Get one vlan by id (netbox)
-     * @param int $vlan_id
-     * @return Entity
-     */
     public function getVlan(int $vlan_id): Entity {
-        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/ipam/vlans/?id=%d", $this->api_url, $vlan_id));
-        return (new Collection($this, $q))->current();
+        return $this->getSingle(sprintf("/api/ipam/vlans/?id=%d", $vlan_id));
     }
 
     public function getApiUrl(): string {
@@ -102,8 +103,7 @@ class Client {
      * @return Collection
      */
     public function groupVlans(int $group_id): Collection {
-        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/ipam/vlans/?group_id=%d", $this->api_url, $group_id));
-        return (new Collection($this, $q));
+        return $this->getCollection(sprintf("/api/ipam/vlans/?group_id=%d", $group_id));
     }
 
     /**
@@ -139,8 +139,7 @@ class Client {
      * @return Collection
      */
     public function deviceCables(int $device_id): Collection {
-        $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/cables?device_id=%d", $this->api_url, $device_id));
-        return (new Collection($this, $q));
+        return $this->getCollection(sprintf("/api/dcim/cables?device_id=%d", $device_id));
     }
-
+    
 }
