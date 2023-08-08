@@ -24,7 +24,7 @@ class Entity implements \ArrayAccess {
     }
 
     public function offsetExists($offset): bool {
-        return isset($this->entity[$offset]);
+        return array_key_exists($offset, $this->entity);
     }
 
     public function offsetGet($offset) {
