@@ -22,12 +22,21 @@ class Collection implements \Iterator, \Countable {
             throw new Exception("netbox err" . $response->getStatusCode() . " " . $response->getReasonPhrase());
         }
         $resp = json_decode($response->getBody()->getContents(), true);
-        $this->count = $resp['count'];
-        $this->page = $resp['results'];
-        $this->next = $resp['next'];
+        if (!array_key_exists('count', $resp) && array_key_exists('id', $resp)) {
+            // This is a single entity
+            $this->count = 1;
+            $this->page = [ $resp ];
+            $this->next = null;
+            $this->page_org = $this->page;
+            $this->next_org = $this->next;
+        } else {
+            $this->count = $resp['count'];
+            $this->page = $resp['results'];
+            $this->next = $resp['next'];
+            $this->page_org = $this->page;
+            $this->next_org = $this->next;
+        }
         $this->client = $client;
-        $this->page_org = $this->page;
-        $this->next_org = $this->next;
     }
 
     public function current(): Entity {
