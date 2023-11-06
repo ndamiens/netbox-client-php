@@ -4,7 +4,8 @@ namespace ND\Netbox;
 
 use Psr\Http\Message\ResponseInterface;
 
-class Collection implements \Iterator, \Countable {
+class Collection implements \Iterator, \Countable
+{
 
     protected $count = 0;
     protected $index = 0;
@@ -17,7 +18,8 @@ class Collection implements \Iterator, \Countable {
     /** @var Client */
     protected $client;
 
-    public function __construct(Client $client, ResponseInterface $response) {
+    public function __construct(Client $client, ResponseInterface $response)
+    {
         if ($response->getStatusCode() != 200) {
             throw new Exception("netbox err" . $response->getStatusCode() . " " . $response->getReasonPhrase());
         }
@@ -30,15 +32,18 @@ class Collection implements \Iterator, \Countable {
         $this->next_org = $this->next;
     }
 
-    public function current(): Entity {
+    public function current(): Entity
+    {
         return new Entity($this->client, $this->page[$this->page_index]);
     }
 
-    public function key() {
+    public function key()
+    {
         return $this->index;
     }
 
-    public function next(): void {
+    public function next(): void
+    {
         $this->index++;
         $this->page_index++;
         if (!$this->valid() && !is_null($this->next)) {
@@ -53,19 +58,21 @@ class Collection implements \Iterator, \Countable {
         }
     }
 
-    public function rewind(): void {
+    public function rewind(): void
+    {
         $this->index = 0;
         $this->page_index = 0;
         $this->page = $this->page_org;
         $this->next = $this->next_org;
     }
 
-    public function valid(): bool {
+    public function valid(): bool
+    {
         return isset($this->page[$this->page_index]);
     }
 
-    public function count(): int {
+    public function count(): int
+    {
         return $this->count;
     }
-
 }

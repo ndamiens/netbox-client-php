@@ -4,7 +4,8 @@ namespace ND\Netbox;
 
 use GuzzleHttp\Exception\ClientException;
 
-class Entity implements \ArrayAccess {
+class Entity implements \ArrayAccess
+{
 
     /** protect keys from updates unwanted */
     const NO_CHANGES_KEYS = ['id', 'url'];
@@ -18,23 +19,27 @@ class Entity implements \ArrayAccess {
     /** @var Client */
     protected $client;
 
-    public function __construct(Client $client, array $entity) {
+    public function __construct(Client $client, array $entity)
+    {
         $this->entity = $entity;
         $this->client = $client;
     }
 
-    public function offsetExists($offset): bool {
+    public function offsetExists($offset): bool
+    {
         return isset($this->entity[$offset]);
     }
 
-    public function offsetGet($offset) {
+    public function offsetGet($offset)
+    {
         if (!$this->offsetExists($offset)) {
             throw new Exception("unknown key '$offset' possible values " . join(',', array_keys($this->entity)));
         }
         return $this->entity[$offset];
     }
 
-    public function offsetSet($offset, $value): void {
+    public function offsetSet($offset, $value): void
+    {
         if (!$this->offsetExists($offset)) {
             throw new Exception("unknown key '$offset' possible values " . join(',', array_keys($this->entity)));
         }
@@ -51,20 +56,22 @@ class Entity implements \ArrayAccess {
         }
     }
 
-    public function updateRelation($key, $value) {
+    public function updateRelation($key, $value)
+    {
         try {
             $this->client->getGuzzleClient()->patch(
-                    $this->entity['url'],
-                    [
-                        'json' => [$key => $value]
-                    ]
+                $this->entity['url'],
+                [
+                    'json' => [$key => $value]
+                ]
             );
         } catch (\Exception $e) {
             throw new Exception("update failed " . $e->getMessage());
         }
     }
 
-    public function update(): void {
+    public function update(): void
+    {
         $changes_with_values = [];
         foreach ($this->changes as $changed_field) {
             $changes_with_values[$changed_field] = $this->entity[$changed_field];
@@ -74,8 +81,8 @@ class Entity implements \ArrayAccess {
         }
         try {
             $this->client->getGuzzleClient()->patch(
-                    $this->entity['url'],
-                    ['json' => $changes_with_values]
+                $this->entity['url'],
+                ['json' => $changes_with_values]
             );
         } catch (\Exception $e) {
             throw new Exception("update failed " . $e->getMessage());
@@ -89,12 +96,13 @@ class Entity implements \ArrayAccess {
      * @param string $path
      * @param array $values
      * @throw ClientException
-     * @return void
+     * @return int
      */
-    public static function post(Client $client, string $path, array $values): int {
+    public static function post(Client $client, string $path, array $values): int
+    {
         $response = $client->getGuzzleClient()->post(
-                $client->getApiUrl() . $path,
-                ['json' => $values]
+            $client->getApiUrl() . $path,
+            ['json' => $values]
         );
         $resp = json_decode($response->getBody()->getContents(), true);
         if (empty($resp['id'])) {
@@ -114,7 +122,8 @@ class Entity implements \ArrayAccess {
      * @param array $values required keys name, slug
      * @throw ClientException
      */
-    public static function postTenant(Client $client, array $values): int {
+    public static function postTenant(Client $client, array $values): int
+    {
         return self::post($client, "/api/tenancy/tenants/", $values);
     }
 
@@ -124,7 +133,8 @@ class Entity implements \ArrayAccess {
      * @param array $values 
      * @throw ClientException
      */
-    public static function postVlanGroup(Client $client, array $values): int {
+    public static function postVlanGroup(Client $client, array $values): int
+    {
         return self::post($client, "/api/ipam/vlan-groups/", $values);
     }
 
@@ -138,7 +148,8 @@ class Entity implements \ArrayAccess {
      * 
      * status values : active, reserved, deprecated
      */
-    public static function postVlan(Client $client, array $values): int {
+    public static function postVlan(Client $client, array $values): int
+    {
         if (array_key_exists('status', $values)) {
             if (!in_array($values['status'], self::VLAN_STATUS_LIST)) {
                 throw new Exception('invalid status');
@@ -147,8 +158,8 @@ class Entity implements \ArrayAccess {
         return self::post($client, "/api/ipam/vlans/", $values);
     }
 
-    public function offsetUnset($offset): void {
+    public function offsetUnset($offset): void
+    {
         throw new Exception("unset not allowed");
     }
-
 }

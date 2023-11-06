@@ -5,24 +5,27 @@ namespace ND\Netbox;
 use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
 
-class Client {
+class Client
+{
 
     private $g_client;
     protected $api_url;
     protected $token;
 
-    public function __construct(string $api_url, string $token) {
+    public function __construct(string $api_url, string $token)
+    {
         $this->api_url = trim($api_url, "/");
         $this->token = $token;
     }
 
-    public function getGuzzleClient(): GuzzleClient {
+    public function getGuzzleClient(): GuzzleClient
+    {
         $this->g_client = new GuzzleClient(
-                [
-            "headers" => [
-                "Authorization" => "Token {$this->token}",
-            ]
+            [
+                "headers" => [
+                    "Authorization" => "Token {$this->token}",
                 ]
+            ]
         );
         return $this->g_client;
     }
@@ -32,11 +35,13 @@ class Client {
      * @param string $url
      * @return ResponseInterface
      */
-    public function getUrl(string $url): ResponseInterface {
+    public function getUrl(string $url): ResponseInterface
+    {
         return $this->getGuzzleClient()->get($url);
     }
 
-    public function devices(?array $device_roles = null): Collection {
+    public function devices(?array $device_roles = null): Collection
+    {
         $roles = [];
         if (is_array($device_roles)) {
             foreach ($device_roles as $id) {
@@ -47,27 +52,32 @@ class Client {
         return new Collection($this, $q);
     }
 
-    public function deviceInterfaces(int $device_id): Collection {
+    public function deviceInterfaces(int $device_id): Collection
+    {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/interfaces/?device_id=%d", $this->api_url, $device_id));
         return new Collection($this, $q);
     }
 
-    public function getInterface(int $interface_id): Entity {
+    public function getInterface(int $interface_id): Entity
+    {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/interfaces/?id=%d", $this->api_url, $interface_id));
         return (new Collection($this, $q))->current();
     }
 
-    public function getTenants(): Collection {
+    public function getTenants(): Collection
+    {
         $q = $this->getGuzzleClient()->request("GET", $this->api_url . "/api/tenancy/tenants");
         return new Collection($this, $q);
     }
 
-    public function getTenant(int $tenant_id): Entity {
+    public function getTenant(int $tenant_id): Entity
+    {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/tenancy/tenants/?id=%d", $this->api_url, $tenant_id));
         return (new Collection($this, $q))->current();
     }
 
-    public function getSites(): Collection {
+    public function getSites(): Collection
+    {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/sites", $this->api_url));
         return new Collection($this, $q);
     }
@@ -77,7 +87,8 @@ class Client {
      * @param int $site_id
      * @return Entity
      */
-    public function getSite(int $site_id): Entity {
+    public function getSite(int $site_id): Entity
+    {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/sites/?id=%d", $this->api_url, $site_id));
         return (new Collection($this, $q))->current();
     }
@@ -87,12 +98,14 @@ class Client {
      * @param int $vlan_id
      * @return Entity
      */
-    public function getVlan(int $vlan_id): Entity {
+    public function getVlan(int $vlan_id): Entity
+    {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/ipam/vlans/?id=%d", $this->api_url, $vlan_id));
         return (new Collection($this, $q))->current();
     }
 
-    public function getApiUrl(): string {
+    public function getApiUrl(): string
+    {
         return $this->api_url;
     }
 
@@ -101,7 +114,8 @@ class Client {
      * @param int $group_id
      * @return Collection
      */
-    public function groupVlans(int $group_id): Collection {
+    public function groupVlans(int $group_id): Collection
+    {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/ipam/vlans/?group_id=%d", $this->api_url, $group_id));
         return (new Collection($this, $q));
     }
@@ -111,7 +125,8 @@ class Client {
      * @param int $group_id
      * @return int|null
      */
-    public function getMaxVidInVlanGroup(int $group_id): ?int {
+    public function getMaxVidInVlanGroup(int $group_id): ?int
+    {
         $last_id = 1;
         foreach ($this->groupVlans($group_id) as $vlan) {
             $last_id = max($last_id, $vlan['vid']);
@@ -125,7 +140,8 @@ class Client {
      * @return int|null
      * @throws Exception
      */
-    public function getNextVidInVlanGroup(int $group_id): ?int {
+    public function getNextVidInVlanGroup(int $group_id): ?int
+    {
         $next_vid = $this->getMaxVidInVlanGroup($group_id) + 1;
         if ($next_vid >= 4096) {
             throw new Exception("free vlans first");
@@ -138,9 +154,9 @@ class Client {
      * @param int $cable_id
      * @return Collection
      */
-    public function deviceCables(int $device_id): Collection {
+    public function deviceCables(int $device_id): Collection
+    {
         $q = $this->getGuzzleClient()->request("GET", sprintf("%s/api/dcim/cables?device_id=%d", $this->api_url, $device_id));
         return (new Collection($this, $q));
     }
-
 }
