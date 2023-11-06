@@ -96,7 +96,7 @@ class Entity implements \ArrayAccess
      * @param string $path
      * @param array $values
      * @throw ClientException
-     * @return void
+     * @return int
      */
     public static function post(Client $client, string $path, array $values): int
     {
@@ -122,7 +122,7 @@ class Entity implements \ArrayAccess
      * @param array $values required keys name, slug
      * @throw ClientException
      */
-    public static function postTenant(Client $client, array $values): void
+    public static function postTenant(Client $client, array $values): int
     {
         return self::post($client, "/api/tenancy/tenants/", $values);
     }
@@ -133,7 +133,7 @@ class Entity implements \ArrayAccess
      * @param array $values 
      * @throw ClientException
      */
-    public static function postVlanGroup(Client $client, array $values): void
+    public static function postVlanGroup(Client $client, array $values): int
     {
         return self::post($client, "/api/ipam/vlan-groups/", $values);
     }
@@ -148,7 +148,7 @@ class Entity implements \ArrayAccess
      * 
      * status values : active, reserved, deprecated
      */
-    public static function postVlan(Client $client, array $values): void
+    public static function postVlan(Client $client, array $values): int
     {
         if (array_key_exists('status', $values)) {
             if (!in_array($values['status'], self::VLAN_STATUS_LIST)) {
