@@ -37,7 +37,7 @@ class Collection implements \Iterator, \Countable
         return new Entity($this->client, $this->page[$this->page_index]);
     }
 
-    public function key()
+    public function key(): int
     {
         return $this->index;
     }
