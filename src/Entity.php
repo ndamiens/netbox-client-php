@@ -30,7 +30,7 @@ class Entity implements \ArrayAccess
         return isset($this->entity[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         if (!$this->offsetExists($offset)) {
             throw new Exception("unknown key '$offset' possible values " . join(',', array_keys($this->entity)));
