@@ -158,6 +158,15 @@ class Entity implements \ArrayAccess
         return self::post($client, "/api/ipam/vlans/", $values);
     }
 
+    /**
+     * Raw entity as returned by the Netbox API
+     * @return array<string,mixed>
+     */
+    public function toArray(): array
+    {
+        return $this->entity;
+    }
+
     public function offsetUnset($offset): void
     {
         throw new Exception("unset not allowed");
